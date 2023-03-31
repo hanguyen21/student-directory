@@ -5,3 +5,6 @@ puts "Darth Vader"
 puts "Elon Musk"
 puts "Jonny Dan"
 puts "Steven Jonn"
+print "Overall, we have "
+print 5
+print " excellent students"
