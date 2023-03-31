@@ -1,10 +1,10 @@
 
 students = [
-    "Dr Hanisha Lecter",
-    "Darth Vader",
-    "Elon Musk",
-    "Jonny Dan",
-    "Steven Jonn"
+    {name: "Dr Hanisha Lecter", cohort: :april},
+    {name:"Darth Vader", cohort: :april},
+    {name:"Elon Musk", cohort: :april},
+    {name:"Jonny Dan", cohort: :april},
+    {name:"Steven Jonn", cohort: :april}
 ]
 #print them
 def print_header
@@ -12,14 +12,14 @@ def print_header
   puts "-----------"
 end
 
-def print(names)
-    names.each do |name|
-        puts name 
+def print(students)
+    students.each do |student|
+        puts "#{student[:name]} (#{student[:cohort]} cohort)"
     end
 end 
 
-def print_footer(names)
-  puts "Overall, we have #{names.count} great students"
+def print_footer(students)
+  puts "Overall, we have #{students.count} great students"
 end
 
 print_header
