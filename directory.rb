@@ -1,28 +1,59 @@
+require 'csv'
 @students = []
+
 
 def input_students
     puts "Please enter the names of the students"
     puts "To finish, just hit return twice"
     name = STDIN.gets.chomp
     while !name.empty? do
-        @students << {name: name, cohort: :november}
+        add_student(name, :november)
         puts "Now we have #{@students.count} students"
         name = STDIN.gets.chomp
     end 
 end
 
+def add_student(name, cohort)
+    @students << {name: name, cohort: cohort.to_sym}
+end 
+
+def save_filename
+    puts " Enter the filename to save students: "
+    filename = STDIN.gets.chomp 
+    filename
+end 
+
+def load_filename
+    puts "Enter the filename to load students:"
+    filename = STDIN.gets.chomp
+    filename 
+end
+
+def load_students(filename)
+  if File.exists?(filename)
+    CSV.foreach(filename) do |row|
+       name, cohort = row
+      add_student(name, cohort)
+    end
+    puts "Loaded #{@students.count} students from #{filename}"
+  else
+    puts "Sorry, #{filename} doesn't exist."
+  end
+end 
+
+
 def interactive_menu
     loop do 
       print_menu
-      process(STDIN.gets.chomp)
+      process_user_input(STDIN.gets.chomp)
     end   
 end 
 
 def print_menu
-    puts "1. Input the students"
-    puts "2. Show the students"
-    puts "3. Save the list to students.csv"
-    puts "4. Load the list from students.csv"
+    puts "1. Add students"
+    puts "2. Display students"
+    puts "3. Save students to file"
+    puts "4. Load students from file"
     puts "9. Exit"
 end
 
@@ -32,20 +63,26 @@ def show_students
     print_footer
 end
 
-def process(selection)
+def process_user_input(selection)
     case selection
     when "1"
         input_students
+        puts "Students added sucessfully."
     when "2"
         show_students
     when "3"
-        save_students
+        filename = save_filename
+        save_students(filename)
+        puts "Students saved to file sucessfully."
     when "4"
-        load_students
+        filename = load_filename
+        load_students(filename)
+        puts "Students loaded from file sucessfully"
     when "9"
+        puts "Exit the program."
         exit
     else
-        puts "I don't know what you meant, try again"
+        puts "Invalid input, please try again "
     end
 end
 
@@ -61,30 +98,20 @@ def print_student_list
 end
 
 def print_footer
-    puts "Overall, we have #{@students.count} great students"
+    puts "Total students: #{@students.count}"
 end
 
-def save_students
-    file = File.open("students.csv", "w")
+def save_students(filename)
+    CSV.open(filename, "w") do |csv|
     @students.each do |student|
-        student_data = [student[:name], student[:cohort]]
-        cvs_line = student_data.join(",")
-        file.puts cvs_line
+      csv << [student[:name], student[:cohort]]
     end
-    file.close
+    end
+    puts "Saved #{@students.count} students to #{filename}"
 end
-
-def load_students(filename = "students.csv")
-    file = File.open("students.csv", "r")
-    file.readlines.each do |line|
-    name , cohort = line.chomp.split(',')
-      @students << {name: name, cohort: cohort.to_sym}
-    end
-    file.close
-end 
 
 def try_load_students
-    filename = ARGV.first 
+    filename = ARGV.first || filename
     return if filename.nil?
     if File.exist?(filename)
         load_students(filename)
@@ -97,8 +124,3 @@ end
 
 try_load_students
 interactive_menu
-
-
-
-
-
